@@ -8,3 +8,4 @@ altair
 itables
 bitarray
 pandas
+lark

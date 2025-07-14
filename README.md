@@ -3,7 +3,7 @@
 - Abdul Raafi M. Bandrang
 - Dennis Paulo S. Delgado
 
-**Milestone 1 demo video**: [link](https://youtu.be)
+**Milestone 1 demo video**: [link](https://youtu.be/lBhajLnlru8)
 
 **Milestone 1 demo site**: [link](https://youtu.be) (please run the application instead in case website is down)
 
