@@ -3,7 +3,7 @@
 - Abdul Raafi M. Bandrang
 - Dennis Paulo S. Delgado
 
-**Milestone 2 demo video**: [link](https://youtu.be/lBhajLnlru8)
+**Milestone 2 demo video**: [link](https://youtu.be/3WeyeUsq2vM)
 
 **Milestone 2 demo site**: [link](https://riscv32icompiler-7zjnzcyvmxep4zimrtq9sn.streamlit.app/) (please run the application instead in case website is down)
 
@@ -29,19 +29,18 @@ run through streamlit cli (installed in the dependencies)
 ```streamlit run app.py```
 
 #### Register and Memory GUI
-Supports only I,B,R,S instructions for word as of the moment. Specifcally covers the following operations: ADD, SUB, LW, SW, ADDI, SLT, SLTI, SLL, SLLI, SRL, SRLI, AND, ANDI, OR, ORI, BEQ, BNE, BLT, BGE.
-
-Also only supports .data, .text, .word, and .global for the directives as of the moment.
+Displays the values for each registy and each 32 bit data segment stored in within the adress range of 0000-07FF for each step done during the build and exection
 
 
-ASM code             |  oppcode
+
+GUI           |  Script
 :-------------------------:|:-------------------------:
-![](images/asmopp.png)  |  ![](images/oppcode.png)
+![](images/register_memory.png)  |  ![](images/m2_sample.png)
 
 
 #### Initial Execution Draft
-Covers 4 specic error checks "Too many operands", "Not a recognized operator", "Register does not exists", and "Label does not exists". Also supports generic syntax and lexical errors with message "Incorrect Syntax" with column and line numbers.
+Displays the cycle for each instruction, and breakdowns the values for the registers in each part of the execultion cycle (Instruction fetch, Instruction decode, Execution, Memory access, and Write-back).
 
-ASM code             |  error check
+Script            |  sequential Execution Cycle
 :-------------------------:|:-------------------------:
-![](images/errorasm.png)  |  ![](images/errorcheck.png)
+![](images/m2_sample.png)  |  ![](images/execution_draft.png)

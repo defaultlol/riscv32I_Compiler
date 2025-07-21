@@ -22,8 +22,6 @@ if 'memory_idx' not in st.session_state:
     st.session_state.memory_idx = pd.DataFrame()
 if 'memory' not in st.session_state:
     st.session_state.memory = get_init_memory()
-if 'memory_original' not in st.session_state:
-    st.session_state.memory = st.session_state.memory
 if 'registerdf' not in st.session_state:
     reload_register_table()
 if 'sec' not in st.session_state:
@@ -90,11 +88,12 @@ response_dict = code_editor(code_text, height=height, theme=theme, shortcuts=sho
 def run_button():
     # print(code_text)
     st.session_state.registers = {i: bitarray(2 ** 5) for i in range(32)}
-    st.session_state.memory_idx = pd.DataFrame()
-    st.session_state.memory = st.session_state.memory
+    st.session_state.memory =  get_init_memory()
     reload_register_table()
     st.session_state.sec = pd.DataFrame()
     st.session_state.current_addr = None
+    for _,row in st.session_state.memory_idx.iterrows():
+        set_mem(st.session_state.memory,row['address'],row['hex'])
     df = st.session_state.instructions
 
     pc=df['address'].min()
