@@ -1,21 +1,21 @@
-# riscv32I_Compiler(Milestone 1)
+# riscv32I_Compiler(Milestone 2)
 #### Members:
 - Abdul Raafi M. Bandrang
 - Dennis Paulo S. Delgado
 
-**Milestone 1 demo video**: [link](https://youtu.be/lBhajLnlru8)
+**Milestone 2 demo video**: [link](https://youtu.be/lBhajLnlru8)
 
-**Milestone 1 demo site**: [link](https://riscv32icompiler-7zjnzcyvmxep4zimrtq9sn.streamlit.app/) (please run the application instead in case website is down)
+**Milestone 2 demo site**: [link](https://riscv32icompiler-7zjnzcyvmxep4zimrtq9sn.streamlit.app/) (please run the application instead in case website is down)
 
 ### project updates
-- implemented basic error checks (basic syntax and lexical errors)
-- implemented instruction format conversion module
-- implmented basic EBNF grammar file using the lark library
-- developed base website for compiler
+- implemented gui for memory and register
+- implemented sequential run
+- implemented step run
 
 ### TODO:
-- implement sequential run module
-- implement register/data GUI
+- implement pipelining
+- add schemes to handle hazards
+- implement complemete pipeline map
 - extend covered instructions
 - extend to other data type directives (byte and half)
 - add ABI registers to the parser

@@ -7,8 +7,8 @@ start: _NL* globaldef _NL+ [datadef] textdef
 
 globaldef: GLOBALDIR LABELREF
 datadef: DATADIR _NL+ dataassign+
-dataassign: LABELDEC TYPEDIR dtypeset _NL+
-
+dataassign: wordassign
+wordassign: LABELDEC WORDDIR dtypeset _NL+
 
 textdef: TEXTDIR _NL+ (codeline _NL)* codeline
 codeline: textlabeldec? instruction?
@@ -120,7 +120,7 @@ LABELREF.1: /[a-zA-Z][0-9a-zA-Z]*/
  
 //Data Types
 HEX.100: /0[xX][0-9A-Fa-f]{1,8}/
-INT.1: /\d/+
+INT.1: /[\+\-]/?/\d/+
 LABELDEC.3: /[a-zA-Z][0-9a-zA-Z]*/":"
 
 LPAREN: "("
