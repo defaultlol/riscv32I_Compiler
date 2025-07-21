@@ -151,6 +151,7 @@ class EvalExpressions(Transformer):
                 rs1=i.value
         return self.get_s_instruction_format(args[0],rs1,args[1].value,offset)
     def get_word_assign(self,varname,val):
+        memval = bitarray(2 ** 5)
         addressline=4*(varname.line-1)
         addressline=ba2hex(int2ba(addressline,length=32))
         if val.type=='HEX':
@@ -159,7 +160,7 @@ class EvalExpressions(Transformer):
             bitvalue.extend(value)
         elif val.type=='INT':
             bitvalue=int2ba(int(val.value),length=32,signed=True)
-        return addressline,bitvalue,ba2hex(bitvalue), ba2int(bitvalue,signed=True)
+        return varname[:-1],addressline,ba2hex(bitvalue)
     def wordassign(self,args):
         print(args)
         return self.get_word_assign(args[0],args[2].children[0])
@@ -197,7 +198,7 @@ def get_instruction_format(code):
 
     riscv_transformer=EvalExpressions(ltrack)
     instruction_tree=riscv_transformer.transform(parse_tree)
-    insdf=pd.DataFrame([{"address":subtree.children[0][0],"instruction_format(Binary)":subtree.children[0][1].to01(),"instruction_format(Hex)":f'0x{ba2hex(subtree.children[0][1])}',"basic":subtree.children[0][2]} for subtree in instruction_tree.find_data('instruction')])
+    insdf=pd.DataFrame([{"address":subtree.children[0][0],"instruction_format(Binary)":subtree.children[0][1].to01(),"instruction_format(Hex)":f'0x{ba2hex(subtree.children[0][1]).upper()}',"basic":subtree.children[0][2]} for subtree in instruction_tree.find_data('instruction')])
 
-    memdf=pd.DataFrame([{"address":subtree.children[0][0],"bit":subtree.children[0][1].to01(),"hex":subtree.children[0][2],"int":subtree.children[0][3]} for subtree in instruction_tree.find_data('dataassign')])
+    memdf=pd.DataFrame([{"variable":subtree.children[0][0],"address":subtree.children[0][1].upper(),"hex":subtree.children[0][2].upper()} for subtree in instruction_tree.find_data('dataassign')])
     return insdf,memdf

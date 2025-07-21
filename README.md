@@ -28,7 +28,7 @@ be sure to be in the working directory.
 run through streamlit cli (installed in the dependencies)
 ```streamlit run app.py```
 
-#### Instruction Format Conversion
+#### Register and Memory GUI
 Supports only I,B,R,S instructions for word as of the moment. Specifcally covers the following operations: ADD, SUB, LW, SW, ADDI, SLT, SLTI, SLL, SLLI, SRL, SRLI, AND, ANDI, OR, ORI, BEQ, BNE, BLT, BGE.
 
 Also only supports .data, .text, .word, and .global for the directives as of the moment.
@@ -39,7 +39,7 @@ ASM code             |  oppcode
 ![](images/asmopp.png)  |  ![](images/oppcode.png)
 
 
-#### Error Checking
+#### Initial Execution Draft
 Covers 4 specic error checks "Too many operands", "Not a recognized operator", "Register does not exists", and "Label does not exists". Also supports generic syntax and lexical errors with message "Incorrect Syntax" with column and line numbers.
 
 ASM code             |  error check
