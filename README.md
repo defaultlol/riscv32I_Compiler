@@ -5,7 +5,7 @@
 
 **Milestone 2 demo video**: [link](https://youtu.be/3WeyeUsq2vM)
 
-**Milestone 2 demo site**: [link](https://riscv32icompiler-7zjnzcyvmxep4zimrtq9sn.streamlit.app/) (please run the application instead in case website is down)
+**Milestone 2 demo site**: [link](https://riscv32icompiler-jqr8wmc6t4kksnu8x7vnke.streamlit.app/) (please run the application instead in case website is down)
 
 ### project updates
 - implemented gui for memory and register
