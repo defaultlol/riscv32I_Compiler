@@ -176,6 +176,7 @@ def build_pipeline_table(sec_df):
 def display_pipeline_register_table(register_data):
     import pandas as pd
     df = pd.DataFrame(register_data).transpose()
+    df.columns = [str(int(c) + 1) for c in df.columns] 
     df = df.fillna("")  
     st.subheader("Pipeline Registers Table")
     st.dataframe(df, use_container_width=True)
