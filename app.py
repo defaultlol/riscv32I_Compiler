@@ -132,25 +132,26 @@ def run_button():
         branch_taken = ba2int(hex2ba(cycle_row['cond'])) > 0
         is_branch = row['basic'].startswith("B") or row['basic'].startswith("b") 
         if is_branch and branch_taken:
-            pc = cycle_row['PC'] 
-            if len(cycle_ins) > 0:
-                flushed_pc = next_pc  
-                flushed_instr = df.loc[df.address == flushed_pc]
-
-                if not flushed_instr.empty:
-                    flushed_row = flushed_instr.iloc[0]
-                    st.session_state.pipeline_schedule.append({
-                        "Instruction": f"[FLUSH] {flushed_row['basic']}",
-                        "address": flushed_pc,
-                        "Stages": {
+            pc = cycle_row['PC']
+            flushed_pc = next_pc
+            flushed_instrs = df.loc[df['address'] > row['address']]
+            for _, flushed_row in flushed_instrs.iterrows():
+                if flushed_row['address'] == pc:
+                    break 
+                st.session_state.pipeline_schedule.append({
+                    "Instruction": f"[FLUSH] {flushed_row['basic']}",
+                    "address": flushed_row['address'],
+                    "Stages": {
                         "IF": st.session_state.cycle_counter,
                         "ID": st.session_state.cycle_counter + 1,
-                        "EX": None,
-                        "MEM": None,
-                        "WB": None
-                }
-            })
+                        "EX": "FLUSH",
+                        "MEM": "FLUSH",
+                        "WB": "FLUSH"
+                    }
 
+                })
+                st.session_state.cycle_counter += 1 
+            
         else:
             pc = cycle_row['PC']
         if pc not in df['address'].tolist():
