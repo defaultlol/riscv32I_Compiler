@@ -78,12 +78,23 @@ def set_lmd_mem(memdf,alu,bval):
     memdf.loc[base_address,col]=ba2hex(bval).upper()
     print(memdf.loc[base_address,col])
     # return memdf
-def get_step_run(pc,instr_fmt,ins,memdf,registers):
+def get_step_run(pc,instr_fmt,ins,memdf,registers,ex_mem=None,mem_wb=None):
     ir=hex2ba(instr_fmt)
     pc=hex2ba(pc)
     npc=int2ba(ba2int(pc)+4,length=32)
     areg=registers[ba2int(ir[-20:-15])]
     breg=registers[ba2int(ir[-25:-20])]
+    if ex_mem and ex_mem.get("rd") is not None:
+        if ba2int(ir[-20:-15]) == ex_mem["rd"]:
+            areg = ex_mem["val"]
+        if ba2int(ir[-25:-20]) == ex_mem["rd"]:
+            breg = ex_mem["val"]
+
+    if mem_wb and mem_wb.get("rd") is not None:
+        if ba2int(ir[-20:-15]) == mem_wb["rd"]:
+            areg = mem_wb["val"]
+        if ba2int(ir[-25:-20]) == mem_wb["rd"]:
+            breg = mem_wb["val"]
 
     ifmt=oppcode_map[ir[-7:].to01()] 
     if ifmt in 'irl':
@@ -103,7 +114,7 @@ def get_step_run(pc,instr_fmt,ins,memdf,registers):
         pc=alu
     else:
         pc=npc
-    cycle_row={"instruction":ins,"IR": ba2hex(ir).upper(), "PC": ba2hex(pc).upper(), "NPC": ba2hex(npc).upper(), "A": ba2hex(areg).upper(), "B": ba2hex(breg).upper(),'Imm':ba2hex(imm).upper(),'cond':ba2hex(cond).upper(),'ALU':ba2hex(alu).upper(),'LMD':None,'Rn':None}
+    cycle_row={"instruction":ins,"IR": ba2hex(ir).upper(), "PC": ba2hex(pc).upper(), "NPC": ba2hex(npc).upper(), "A": ba2hex(areg).upper(), "B": ba2hex(breg).upper(),'Imm':ba2hex(imm).upper(),'cond':ba2hex(cond),'ALU':ba2hex(alu).upper(),'LMD':None,'Rn':None}
     lmd=None
     if ifmt=='l':
         lmd=get_lmd_mem(memdf,alu)
@@ -117,7 +128,11 @@ def get_step_run(pc,instr_fmt,ins,memdf,registers):
         cycle_row['Rn']=ba2hex(alu).upper()
         registers[ba2int(ir[-12:-7])]=alu
     pc=ba2hex(pc).upper()
-    return cycle_row
+    forwarding_out = {
+        "rd": ba2int(ir[-12:-7]) if ifmt in 'irl' else None,
+        "val": lmd if ifmt == 'l' else alu if ifmt in 'ir' else None
+    }
+    return cycle_row, forwarding_out
 def get_init_memory():
     memidx=[ba2hex(int2ba(i,length=32,signed=False)).upper() for i in range(0,2047,32)]
     memrow=[{f'Value (+{hex(k*4)[2:].upper()})':'0'*8 for k in range(8)} for i in range(0,2047,32)]

@@ -1,4 +1,4 @@
-from email.mime import base
+﻿from email.mime import base
 import json
 import streamlit as st
 from code_editor import code_editor
@@ -16,7 +16,8 @@ def reload_register_table():
         {"Register": f'0x{reg}', "Value (Hex)": ba2hex(val), "Value (Dec)": ba2int(val)}
         for reg, val in st.session_state.registers.items()
     ]
-
+def hex2ba(hex_string):
+    return bitarray(bin(int(hex_string, 16))[2:].zfill(32))
 # Register initialization
 if 'registers' not in st.session_state:
     st.session_state.registers = {i: bitarray(2 ** 5) for i in range(32)}
@@ -106,10 +107,13 @@ def run_button():
     pc=df['address'].min()
     cycle_df=[]
     cycle_ins=[]
+    forward_ex_mem = None
+    forward_mem_wb = None
     while pc in df['address'].tolist():
         cycle_ins.append(pc)
         row=df.loc[df.address==pc].iloc[0]
-        cycle_row=get_step_run(pc,row['instruction_format(Hex)'][2:],row['basic'],st.session_state.memory,st.session_state.registers)
+        cycle_row,forward_ex_mem=get_step_run(pc,row['instruction_format(Hex)'][2:],row['basic'],st.session_state.memory,st.session_state.registers,ex_mem=forward_ex_mem,mem_wb=forward_mem_wb)
+        forward_mem_wb = forward_ex_mem
         cycle_df.append(cycle_row)
         start_cycle = st.session_state.cycle_counter
         st.session_state.pipeline_schedule.append({
@@ -124,7 +128,31 @@ def run_button():
             }
         })
         st.session_state.cycle_counter +=1
-        pc=cycle_row['PC']
+        next_pc = cycle_row['NPC']
+        branch_taken = ba2int(hex2ba(cycle_row['cond'])) > 0
+        is_branch = row['basic'].startswith("B") or row['basic'].startswith("b") 
+        if is_branch and branch_taken:
+            pc = cycle_row['PC'] 
+            if len(cycle_ins) > 0:
+                flushed_pc = next_pc  
+                flushed_instr = df.loc[df.address == flushed_pc]
+
+                if not flushed_instr.empty:
+                    flushed_row = flushed_instr.iloc[0]
+                    st.session_state.pipeline_schedule.append({
+                        "Instruction": f"[FLUSH] {flushed_row['basic']}",
+                        "address": flushed_pc,
+                        "Stages": {
+                        "IF": st.session_state.cycle_counter,
+                        "ID": st.session_state.cycle_counter + 1,
+                        "EX": None,
+                        "MEM": None,
+                        "WB": None
+                }
+            })
+
+        else:
+            pc = cycle_row['PC']
         if pc not in df['address'].tolist():
             near_idx=df['address'].searchsorted(pc,'right')
             if near_idx<=df.index.max():
