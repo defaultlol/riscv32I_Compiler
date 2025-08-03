@@ -198,7 +198,7 @@ def get_instruction_format(code):
 
     riscv_transformer=EvalExpressions(ltrack)
     instruction_tree=riscv_transformer.transform(parse_tree)
-    insdf=pd.DataFrame([{"address":subtree.children[0][0],"instruction_format(Binary)":subtree.children[0][1].to01(),"instruction_format(Hex)":f'0x{ba2hex(subtree.children[0][1]).upper()}',"basic":subtree.children[0][2]} for subtree in instruction_tree.find_data('instruction')])
+    insdf=pd.DataFrame([{"address":subtree.children[0][0],"instruction_format(Binary)":subtree.children[0][1].to01(),"instruction_format(Hex)":ba2hex(subtree.children[0][1]).upper(),"basic":subtree.children[0][2]} for subtree in instruction_tree.find_data('instruction')])
 
     memdf=pd.DataFrame([{"variable":subtree.children[0][0],"address":subtree.children[0][1].upper(),"hex":subtree.children[0][2].upper()} for subtree in instruction_tree.find_data('dataassign')])
     return insdf,memdf
