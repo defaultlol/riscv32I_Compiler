@@ -9,4 +9,3 @@ itables
 bitarray
 pandas
 lark
-plotly.express==0.4.1

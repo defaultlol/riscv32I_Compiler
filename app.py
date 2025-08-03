@@ -403,7 +403,7 @@ if len(response_dict['id']) != 0 and (response_dict['type'] == "selection" or re
         st.subheader("Pipeline Map")
         # st.session_state.pipeline_table.to_csv('pipeline_test.csv')
         pipeline_df=st.session_state.pipeline_table
-        st.dataframe(st.session_state.pipeline_table, use_container_width=True)
+        # st.dataframe(st.session_state.pipeline_table, use_container_width=True)
         fig = px.timeline(pipeline_df, x_start="cycle", x_end="cycle_end", y="instruction", color="stage")
         fig.update_yaxes(autorange="reversed")
         fig.layout.xaxis.type = 'linear'
