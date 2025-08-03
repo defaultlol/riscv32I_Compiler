@@ -70,7 +70,7 @@ def get_excycle(ifmt,aval,bval,imm,f3,f7,pc):
 def get_lmd_mem(memdf,alu):
     base_address=ba2hex(int2ba(32*math.floor(ba2int(alu)/32),length=32)).upper()
     col=f'Value (+{hex(ba2int(alu)%32)[2:].upper()})'
-    return memdf.loc[base_address,col]
+    return hex2ba(memdf.loc[base_address,col])
 def set_lmd_mem(memdf,alu,bval):
     base_address=ba2hex(int2ba(32*math.floor(ba2int(alu)/32),length=32)).upper()
     col=f'Value (+{hex(ba2int(alu)%32)[2:].upper()})'
