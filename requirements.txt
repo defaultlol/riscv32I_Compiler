@@ -3,9 +3,10 @@ streamlit-aggrid
 st-material-table
 streamlit_code_editor
 streamlit-echarts
-plotly
+plotly==5.18.0
 altair
 itables
 bitarray
 pandas
 lark
+plotly.express==0.4.1
