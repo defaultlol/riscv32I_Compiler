@@ -1,21 +1,19 @@
-# riscv32I_Compiler(Milestone 2)
+# riscv32I_Compiler(Final)
 #### Members:
 - Abdul Raafi M. Bandrang
 - Dennis Paulo S. Delgado
 
-**Milestone 2 demo video**: [link](https://youtu.be/3WeyeUsq2vM)
+**Final demo video**: [link](https://youtu.be/-2WyiwqkFhU)
 
-**Milestone 2 demo site**: [link](https://riscv32icompiler-jqr8wmc6t4kksnu8x7vnke.streamlit.app/) (please run the application instead in case website is down)
+**Finaldemo site**: [link](https://riscv32icompiler-icnpgctosobyj4j5rysekk.streamlit.app/) (please run the application instead in case website is down/or some execution issues)
 
 ### project updates
-- implemented gui for memory and register
-- implemented sequential run
-- implemented step run
+- implemented pipelining
+- implemented Predict not taken
+- implemented Data Forwarding for Load and ALU
+- implemented complete pipeline map
 
-### TODO:
-- implement pipelining
-- add schemes to handle hazards
-- implement complemete pipeline map
+### Nice to have had:
 - extend covered instructions
 - extend to other data type directives (byte and half)
 - add ABI registers to the parser
@@ -28,19 +26,17 @@ be sure to be in the working directory.
 run through streamlit cli (installed in the dependencies)
 ```streamlit run app.py```
 
-#### Register and Memory GUI
-Displays the values for each registy and each 32 bit data segment stored in within the adress range of 0000-07FF for each step done during the build and exection
+#### Pipeline Map 
+we've included a gant chart to display the execution of each stage of the pipeline for each instruction
+![](images/pipeline_map.png)
 
 
+#### Execution Draft
+Displays each cycle for the entirety of the program and its corresponding internal registers and their value at each cycle
 
-GUI           |  Script
-:-------------------------:|:-------------------------:
-![](images/register_memory.png)  |  ![](images/m2_sample.png)
+![](images/Execution.png)
 
-
-#### Initial Execution Draft
-Displays the cycle for each instruction, and breakdowns the values for the registers in each part of the execultion cycle (Instruction fetch, Instruction decode, Execution, Memory access, and Write-back).
-
-Script            |  sequential Execution Cycle
-:-------------------------:|:-------------------------:
-![](images/m2_sample.png)  |  ![](images/execution_draft.png)
+#### Hazard Handling
+we've included Data and Control hazard handling for the pipeline.
+![](images/Data_Hazard.png)
+![](images/pipeline_map.png)
