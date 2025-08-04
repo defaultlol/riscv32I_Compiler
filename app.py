@@ -8,9 +8,9 @@ from exceptions import RiscSyntaxError
 import pandas as pd
 import plotly.express as px
 from bitarray import bitarray
-from bitarray.util import ba2hex,ba2int
+from bitarray.util import ba2hex,ba2int,hex2ba
 from oppinterpreter import get_init_memory,set_mem,get_step_run
-from opppipeline import get_init_memory_pipe,set_mem_pipe,get_cycle,set_pnt_registers,forward_data
+from opppipeline import get_init_memory_pipe,set_mem_pipe,get_cycle,set_pnt_registers,forward_data,get_base_ir
 
 st.set_page_config(layout="wide")
 
@@ -66,9 +66,14 @@ def reload_internal_registers():
 def refresh_pipeline_table():
     pipeline_df=pd.DataFrame(st.session_state.pipeline_schedule)
     pipeline_df['cycle']=pipeline_df['cycle'].astype(int)
-    pipeline_df.sort_values(['address','cycle'],inplace=True)
     pipeline_df['cycle_end']=pipeline_df['cycle']+1
     pipeline_df['delta'] = pipeline_df['cycle_end'] - pipeline_df['cycle']
+    temp_df=st.session_state.instructions.__deepcopy__()
+    temp_df=temp_df[['address','basic']].rename(columns={'basic':'instruction'})
+    pipeline_df=temp_df.merge(pipeline_df,on=['address','instruction'],how='left')
+    pipeline_df.sort_values(['address','cycle'],inplace=True)
+    print(pipeline_df.instruction.unique())
+    pipeline_df['instruction_line']=pipeline_df['address']+'\n'+pipeline_df['instruction']
     st.session_state.pipeline_table=pd.DataFrame(pipeline_df)
 def refresh_cycle_table():
     temp_df=pd.DataFrame(st.session_state.register_cycles)
@@ -88,7 +93,14 @@ if 'memory_idx' not in st.session_state:
     st.session_state.memory_idx = pd.DataFrame()
 if 'memory' not in st.session_state:
     st.session_state.memory = get_init_memory_pipe()
-    
+if 'address_search' not in st.session_state:
+    st.session_state.address_search = None
+if 'return_search' not in st.session_state:
+    st.session_state.return_search = None
+
+
+
+
 if 'registerdf' not in st.session_state:
     reload_register_table()
 if 'sec' not in st.session_state:
@@ -332,11 +344,17 @@ def display_pipeline_register_table(register_data):
     df = df.fillna("")  
     st.subheader("Pipeline Registers Table")
     st.dataframe(df, use_container_width=True)
-
+def search_mem():
+    if st.session_state.address_search is not None:
+        st.session_state.return_search=get_base_ir(st.session_state.memory,hex2ba(st.session_state.address_search.upper()))
+    else:
+        st.session_state.return_search=None
 print(response_dict)
 if len(response_dict['id']) != 0 and (response_dict['type'] == "selection" or response_dict['type'] == "submit" ):
     with col1:
         if st.session_state.build_id!=response_dict['id']:
+            st.session_state.address_search = None
+            st.session_state.return_search = None
             st.session_state.code_built=False
             print('new build',response_dict['id'])
             st.session_state.build_id=response_dict['id']
@@ -398,13 +416,22 @@ if len(response_dict['id']) != 0 and (response_dict['type'] == "selection" or re
         st.subheader("Memory State")
         st.dataframe(st.session_state.memory_idx, use_container_width=True)
         st.dataframe(st.session_state.memory, use_container_width=True)
+        subcol3, subcol4, subcol5 = st.columns(3)
+        with subcol3:
+            st.session_state.address_search = st.text_input("Address")
+        with subcol4:
+            st.button('Search', on_click=search_mem)
+        if st.session_state.return_search is not None:
+            with subcol5:
+                st.write(f"{st.session_state.address_search} : {st.session_state.return_search}")
     if len(st.session_state.pipeline_schedule)>0:
         refresh_pipeline_table()
         st.subheader("Pipeline Map")
         # st.session_state.pipeline_table.to_csv('pipeline_test.csv')
         pipeline_df=st.session_state.pipeline_table
         # st.dataframe(st.session_state.pipeline_table, use_container_width=True)
-        fig = px.timeline(pipeline_df, x_start="cycle", x_end="cycle_end", y="instruction", color="stage")
+        pipeline_df.to_csv('test.csv')
+        fig = px.timeline(pipeline_df, x_start="cycle", x_end="cycle_end", y="instruction_line", color="stage")
         fig.update_yaxes(autorange="reversed")
         fig.layout.xaxis.type = 'linear'
         for i in range(len(fig.data)):

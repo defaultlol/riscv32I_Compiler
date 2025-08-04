@@ -53,7 +53,7 @@ def get_alu_i(aval,imm,f3):
         case '101':
             return aval >> ba2int(imm)
         case '010':
-            return int2ba(int(int(int2ba(aval,signed=False) < int2ba(imm,signed=False))),length=32)
+            return int2ba(int(int(aval < imm)),length=32)
 def get_alu_r(aval,bval,f37):
     match f37:
         case '0000000000':
